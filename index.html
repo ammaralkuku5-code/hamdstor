@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>متجر حسابات ببجي</title>
+
+<style>
+    .contact-buttons{
+    position:fixed;
+    bottom:20px;
+    left:20px;
+    display:flex;
+    gap:10px;
+    z-index:2000;
+}
+
+.contact-buttons a{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:12px 15px;
+    border-radius:50px;
+    color:#fff;
+    font-weight:bold;
+    text-decoration:none;
+    font-size:14px;
+}
+
+.whatsapp{background:#25D366}
+.telegram{background:#0088cc}
+body{
+    background:#0f0f0f;
+    color:#fff;
+    font-family:Tahoma
+}
+header{
+    header{
+    position:relative;
+    padding:20px;
+    background:#000;
+    border-bottom:2px solid #f5c542;
+    
+}
+}
+header h1{color:#f5c542;margin:0;
+    text-align: center;
+}
+
+/* زر الثلاث خطوط */
+.menu-btn{
+    position:absolute;
+    right:20px;   /* هنا يمين */
+    top:20px;
+    font-size:26px;
+    cursor:pointer;
+}
+
+/* القائمة المخفية */
+.menu{
+    position:absolute;
+    top:70px;
+    right:20px;
+    background:#1c1c1c;
+    border:1px solid #f5c542;
+    border-radius:5px;
+    display:none;
+    min-width:160px;
+    z-index:1000
+}
+.menu div{
+    padding:12px;
+    cursor:pointer;
+    border-bottom:1px solid #333
+}
+.menu div:last-child{border-bottom:none}
+.menu div:hover,
+.menu div.active{
+    background:#f5c542;
+    color:#000
+}
+
+.container{
+    width:90%;
+    margin:20px auto;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:20px
+}
+.card{
+    background:#1a1a1a;
+    border-radius:10px;
+    overflow:hidden
+}
+
+/* السلايدر */
+.slider{position:relative}
+.slider img{
+    width:100%;
+    height:150px;
+    object-fit:contain;
+    background:#000;
+    display:none
+}
+.slider img.active{display:block}
+
+.slider button{
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    background:rgba(0,0,0,.6);
+    color:#fff;
+    border:none;
+    font-size:20px;
+    padding:5px 10px;
+    cursor:pointer
+}
+.prev{right:10px}
+.next{left:10px}
+
+.card-content{padding:15px}
+.price{color:#00ff88;font-size:18px;margin-top:10px}
+</style>
+</head>
+
+<body>
+    <div class="contact-buttons">
+    <a href="https://wa.me/+9647726650831" target="_blank" class="whatsapp">
+        واتساب
+    </a>
+    <a href="https://t.me/sloo1m" target="_blank" class="telegram">
+        تيليجرام
+    </a>
+</div>
+
+<header>
+    <h1   >🔥   𝗪𝗮𝗿𝗲𝗵𝗼𝘂𝘀𝗲 | ويرهاوس  🔥</h1>
+    <div class="menu-btn" onclick="toggleMenu()">☰</div>
+    
+     
+</header>
+
+<!-- القائمة -->
+<div class="menu" id="menu">
+    <div class="active" onclick="show('global', this)">عالمية</div>
+    <div onclick="show('korea', this)">كورية</div>
+    <div onclick="show('vietnam', this)">فيتنامية</div>
+</div>
+
+<div class="container" id="global"></div>
+<div class="container" id="korea" style="display:none"></div>
+<div class="container" id="vietnam" style="display:none"></div>
+
+<script>
+const accounts = JSON.parse(localStorage.getItem("accounts")) || [];
+
+function toggleMenu(){
+    const menu = document.getElementById("menu");
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+function render(){
+    ['global','korea','vietnam'].forEach(id=>{
+        document.getElementById(id).innerHTML='';
+    });
+
+    accounts.forEach(a=>{
+        let imgs = a.images.map((img,i)=>`
+            <img src="${img}" class="${i===0?'active':''}">
+        `).join('');
+
+        document.getElementById(a.type).innerHTML += `
+        <div class="card">
+            <div class="slider" data-index="0">
+                ${imgs}
+                <button class="prev" onclick="prev(this)">‹</button>
+                <button class="next" onclick="next(this)">›</button>
+            </div>
+            <div class="card-content">
+                <h3>${a.title}</h3>
+                <p>${a.desc}</p>
+                <div class="price">${a.price}$</div>
+            </div>
+        </div>`;
+    });
+}
+
+
+
+function next(btn){
+    let slider = btn.parentElement;
+    let imgs = slider.querySelectorAll("img");
+    let i = +slider.dataset.index;
+    imgs[i].classList.remove("active");
+    i = (i+1)%imgs.length;
+    imgs[i].classList.add("active");
+    slider.dataset.index = i;
+}
+
+function prev(btn){
+    let slider = btn.parentElement;
+    let imgs = slider.querySelectorAll("img");
+    let i = +slider.dataset.index;
+    imgs[i].classList.remove("active");
+    i = (i-1+imgs.length)%imgs.length;
+    imgs[i].classList.add("active");
+    slider.dataset.index = i;
+}
+
+function show(id, el){
+    ['global','korea','vietnam'].forEach(s=>{
+        document.getElementById(s).style.display='none';
+    });
+    document.getElementById(id).style.display='grid';
+
+    document.querySelectorAll('.menu div').forEach(d=>{
+        d.classList.remove('active');
+    });
+    el.classList.add('active');
+
+    document.getElementById("menu").style.display="none";
+}
+
+render();
+</script>
+
+</body>
+</html>
